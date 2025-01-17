@@ -4,6 +4,10 @@ require 'src/Dependencies'
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
+    math.randomseed(os.time())
+
+    love.window.setTitle('Breakout by Dark Samurai')
+    
     -- Fonts table
     gFonts = {
         ['small'] = love.graphics.newFont('fonts/font.ttf', 8),
@@ -21,6 +25,11 @@ function love.load()
         ['particle'] = love.graphics.newImage('graphics/particle.png'),
     }
 
+    gFrames = {
+        ['paddles'] = GenerateQuadsPaddles(gTextures['main']),
+        ['balls'] = GenerateQuadsBalls(gTextures['main'])
+    }
+
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         vsync = true,
         fullscreen = false,
@@ -28,27 +37,27 @@ function love.load()
     })
 
     gSounds = {
-        ['paddle-hit'] = love.audio.newSource('sounds/paddle_hit.wav', 'static'),
+        ['paddle_hit'] = love.audio.newSource('sounds/paddle_hit.wav', 'static'),
         ['score'] = love.audio.newSource('sounds/score.wav', 'static'),
-        ['wall-hit'] = love.audio.newSource('sounds/wall_hit.wav', 'static'),
+        ['wall_hit'] = love.audio.newSource('sounds/wall_hit.wav', 'static'),
         ['confirm'] = love.audio.newSource('sounds/confirm.wav', 'static'),
         ['select'] = love.audio.newSource('sounds/select.wav', 'static'),
-        ['no-select'] = love.audio.newSource('sounds/no_select.wav', 'static'),
-        ['brick-hit-1'] = love.audio.newSource('sounds/brick_hit_1.wav', 'static'),
-        ['brick-hit-2'] = love.audio.newSource('sounds/brick_hit_2.wav', 'static'),
+        ['no_select'] = love.audio.newSource('sounds/no_select.wav', 'static'),
+        ['brick_hit_1'] = love.audio.newSource('sounds/brick_hit_1.wav', 'static'),
+        ['brick_hit_2'] = love.audio.newSource('sounds/brick_hit_2.wav', 'static'),
         ['hurt'] = love.audio.newSource('sounds/hurt.wav', 'static'),
         ['victory'] = love.audio.newSource('sounds/victory.wav', 'static'),
         ['recover'] = love.audio.newSource('sounds/recover.wav', 'static'),
-        ['high-score'] = love.audio.newSource('sounds/high_score.wav', 'static'),
+        ['high_score'] = love.audio.newSource('sounds/high_score.wav', 'static'),
         ['pause'] = love.audio.newSource('sounds/pause.wav', 'static'),
 
         ['music'] = love.audio.newSource('sounds/music.wav', 'static'),
-
     }
 
 
     gStateMachine = StateMachine {
-        ['start'] = function() return StartState() end
+        ['start'] = function() return StartState() end,
+        ['play'] = function() return PlayState() end
     }
     gStateMachine:change('start')
 
@@ -59,7 +68,13 @@ function love.resize(w, h)
     push:resize(w, h)
 end    
 
-function love.keyPressed(key)
+function love.update(dt)
+    gStateMachine:update(dt)
+
+    love.keyboard.keysPressed = {}
+end
+
+function love.keypressed(key)
     love.keyboard.keysPressed[key] = true
 end    
 
@@ -78,18 +93,19 @@ function love.draw()
     local bgHeight = gTextures['background']:getHeight()
 
     love.graphics.draw(gTextures['background'],
-    0, 0, --Coordinates at X, Y
-    0, --Orientation
-    -- The below function finds a scale multiplier by dividing 
-    -- VIRTUAL_WIDTH and VIRTUAL_HEIGHT by actual values of the background
-    -- so as to scale the image perfectly on the screen
-    VIRTUAL_WIDTH / (bgWidth - 1), VIRTUAL_HEIGHT / (bgHeight - 1))
+        0, 0, --Coordinates at X, Y
+        0, --Orientation
+        -- The below function finds a scale multiplier by dividing 
+        -- VIRTUAL_WIDTH and VIRTUAL_HEIGHT by actual values of the background
+        -- so as to scale the image perfectly on the screen
+        VIRTUAL_WIDTH / (bgWidth - 1), VIRTUAL_HEIGHT / (bgHeight - 1)
+    )
 
     gStateMachine:render()
 
     displayFPS()
 
-    push:finish()
+     push:finish()
 end    
 
 function displayFPS()
