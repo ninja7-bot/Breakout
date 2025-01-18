@@ -11,11 +11,11 @@ function Ball:init(skin)
 end
 
 function Ball:collides(target)
-    if self.x > target.x + target.width or self.x > self.x + self.width then
+    if self.x > target.x + target.width or target.x > self.x + self.width then
         return false
     end
 
-    if self.y > target.y + target.height or self.y > self.y + self.height then
+    if self.y > target.y + target.height or target.y > self.y + self.height then
         return false
     end
     return true
@@ -34,19 +34,19 @@ function Ball:update(dt)
 
     if self.x <= 0 then
         self.x = 0
-        self.dx = -self.dx
+        self.dx = -self.dx 
         gSounds['wall_hit']:play()
     end
 
     if self.x >= VIRTUAL_WIDTH - 8 then
         self.x = VIRTUAL_WIDTH - 8
-        self.dx = -self.dx
+        self.dx = -self.dx 
         gSounds['wall_hit']:play()
     end
 
     if self.y <= 0 then
         self.y = 0
-        self.dy = -self.dy
+        self.dy = -self.dy 
         gSounds['wall_hit']:play()
     end
 end

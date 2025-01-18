@@ -15,7 +15,12 @@ function StartState:update(dt)
         gSounds['confirm']:play()
 
         if highlighted == 1 then
-            gStateMachine:change('play')
+            gStateMachine:change('serve', {
+                paddle = Paddle(1),
+                bricks = LevelMaker.createMap(),
+                health = 3,
+                score = 0
+            })
         end
     end
 
@@ -28,11 +33,13 @@ end
 function StartState:render()
     -- title
     love.graphics.setFont(gFonts['large'])
-    love.graphics.printf("BREAKOUT", 0, VIRTUAL_HEIGHT / 3,
+    love.graphics.printf("BREAKOUT!", 0, VIRTUAL_HEIGHT / 3,
         VIRTUAL_WIDTH, 'center')
     
     -- instructions
     love.graphics.setFont(gFonts['medium'])
+    love.graphics.printf("By Dark Samurai!", 0, VIRTUAL_HEIGHT / 2,
+        VIRTUAL_WIDTH, 'center')
 
     -- if we're highlighting 1, render that option blue
     if highlighted == 1 then

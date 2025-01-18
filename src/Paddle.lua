@@ -1,6 +1,6 @@
 Paddle = Class{}
 
-function Paddle:init()
+function Paddle:init(skin)
     -- The position of the Paddle.
     self.x = VIRTUAL_WIDTH / 2 - 32
     self.y = VIRTUAL_HEIGHT - 32
@@ -13,7 +13,7 @@ function Paddle:init()
     self.height = 16
 
     -- The current Skin of the Paddle.
-    self.skin = 1
+    self.skin = skin
     
     -- The size of the paddle from Smallest to Largest.
     self.size = 2
